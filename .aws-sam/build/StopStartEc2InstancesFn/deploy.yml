@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: start-stop-ec2-instances
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  StopStartEc2InstancesFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: StopStartEc2Instances
+      Description: A Lambda function that starts or stop ec2 instances on a schedule
+      Runtime: nodejs10.x
+      Handler: src/handlers/index.handler
+      Role: arn:aws:iam::391997296443:role/StopStartEC2Instance
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Name: Sun-start-ec2
+            Description: This schedule triggers ec2 instances start.
+            Schedule: cron(5 21 ? * Sun *)
+            Input: '{ "action":"start" }'
+            Enabled: true
+      MemorySize: 128
+      Timeout: 60
+      CodeUri: s3://ig-markets-test/196619e7584be7f4fa8d611747fea3b6
+Outputs:
+  StopStartEc2InstancesFn:
+    Description: A Lambda function that starts or stop ec2 instances on a schedule
+    Value:
+      Fn::GetAtt:
+      - StopStartEc2InstancesFn
+      - Arn
